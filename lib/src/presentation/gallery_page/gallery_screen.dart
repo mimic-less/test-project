@@ -10,6 +10,7 @@ import '../../domain/services/auth_service.dart';
 import '../../utils/extensions/scroll_controller_extension.dart';
 import 'provider/gallery_notifier.dart';
 import 'widgets/grid_view_photo.dart';
+import 'widgets/logout_dialog.dart';
 
 class GalleryScreen extends StatefulWidget {
   const GalleryScreen({super.key});
@@ -44,29 +45,12 @@ class _GalleryScreenState extends State<GalleryScreen> {
     super.dispose();
   }
 
-  Future<void> _showLogoutDialog(BuildContext context) {
-    return showCupertinoDialog(
+  Future<void> _showLogoutDialog(BuildContext context) async {
+    final result = await showCupertinoDialog<bool?>(
       context: context,
-      builder: (context) => CupertinoAlertDialog(
-        title: const Text('Alert'),
-        content: const Text('Proceed with this destructive action?'),
-        actions: <CupertinoDialogAction>[
-          CupertinoDialogAction(
-            isDefaultAction: true,
-            onPressed: () => Navigator.pop(context),
-            child: const Text('No'),
-          ),
-          CupertinoDialogAction(
-            isDestructiveAction: true,
-            onPressed: () async {
-              Navigator.pop(context);
-              await getIt<AuthService>().logout();
-            },
-            child: const Text('Yes'),
-          ),
-        ],
-      ),
+      builder: (context) => const LogoutDialog(),
     );
+    if (result == true) await getIt<AuthService>().logout();
   }
 
   Widget _loadingWidget(bool isLoading) {
@@ -76,6 +60,21 @@ class _GalleryScreenState extends State<GalleryScreen> {
 
   void _buttonAction(BuildContext context, Photo photo) {
     context.push('/gallery-screen/image-preview-screen', extra: photo);
+  }
+
+  Widget _errorWidget(BuildContext context, String error) {
+    if (error.isEmpty) return const SizedBox();
+    return SafeArea(
+      child: MaterialBanner(
+        content: Text(error),
+        actions: [
+          TextButton(
+            onPressed: () => context.read<GalleryNotifier>().loadNext(),
+            child: const Text('Retry'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -89,7 +88,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
       child: Scaffold(
         backgroundColor: Colors.white,
         floatingActionButton: Consumer<GalleryNotifier>(
-          builder: (context, notifier, child) => FloatingActionButton(
+          builder: (context, notifier, _) => FloatingActionButton(
             onPressed: () => notifier.pickAndInsertLocalImage(),
             child: const Icon(Icons.add),
           ),
@@ -108,7 +107,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
           children: [
             Selector<GalleryNotifier, List<Photo>>(
               selector: (context, notifier) => notifier.state.photos,
-              builder: (context, photos, child) {
+              builder: (context, photos, _) {
                 return GridView.builder(
                   controller: _scrollController,
                   itemCount: photos.length,
@@ -128,7 +127,14 @@ class _GalleryScreenState extends State<GalleryScreen> {
             ),
             Selector<GalleryNotifier, bool>(
               selector: (context, notifier) => notifier.state.isLoading,
-              builder: (context, value, child) => _loadingWidget(value),
+              builder: (context, isLoading, _) => _loadingWidget(isLoading),
+            ),
+            Align(
+              alignment: Alignment.topCenter,
+              child: Selector<GalleryNotifier, String>(
+                selector: (context, notifier) => notifier.state.error,
+                builder: (context, error, _) => _errorWidget(context, error),
+              ),
             ),
           ],
         ),

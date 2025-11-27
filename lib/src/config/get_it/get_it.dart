@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../data/repositories/auth_repository_impl.dart';
@@ -8,8 +9,6 @@ import '../../data/token/shared_prefs_token_storage.dart';
 import '../../domain/token/token_storage_service.dart';
 import '../../data/repositories/gallery_repository_impl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../../data/api/api_client.dart';
 import '../../domain/repositories/gallery_repository.dart';
 
 final getIt = GetIt.instance;
@@ -18,18 +17,23 @@ Future<void> setupDependencies() async {
   final prefs = await SharedPreferences.getInstance();
   final tokenStorage = SharedPrefsTokenStorage(prefs);
 
-  final apiClient = ApiClient();
+  final dio = Dio();
+
+  dio.options = BaseOptions(
+    connectTimeout: const Duration(seconds: 5),
+    receiveTimeout: const Duration(seconds: 5),
+  );
   final authStateNotifier = AuthStateNotifier();
-  final authRepository = AuthRepositoryImpl(apiClient);
+  final authRepository = AuthRepositoryImpl(dio);
   final authService = AuthServiceImpl(
     tokenStorageService: tokenStorage,
     authRepository: authRepository,
     authStateNotifier: authStateNotifier,
   );
 
-  final galleryRepository = GalleryRepositoryImpl(apiClient);
+  final galleryRepository = GalleryRepositoryImpl(dio);
 
-  getIt.registerSingleton<ApiClient>(apiClient);
+  getIt.registerSingleton<Dio>(dio);
 
   getIt.registerSingleton<TokenStorageService>(tokenStorage);
 

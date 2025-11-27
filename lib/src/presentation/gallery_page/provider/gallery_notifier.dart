@@ -1,6 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../../../domain/models/photo.dart';
 import '../../../domain/repositories/gallery_repository.dart';
+import '../../../utils/extensions/dio_exception_extension.dart';
 
 part 'gallery_state.dart';
 
@@ -15,20 +17,27 @@ class GalleryNotifier extends ChangeNotifier {
   Future<void> loadNext() async {
     if (state.isLoading || !state.hasMore) return;
 
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(isLoading: true, error: '');
     notifyListeners();
 
-    await Future.delayed(const Duration(seconds: 2));
-    final data = await _galleryRepository.fetch(state.page);
+    try {
+      final data = await _galleryRepository.fetch(state.page);
 
-    state = state.copyWith(
-      photos: [...state.photos, ...data],
-      isLoading: false,
-      hasMore: data.isNotEmpty,
-      page: state.page + 1,
-    );
+      state = state.copyWith(
+        photos: [...state.photos, ...data],
+        isLoading: false,
+        hasMore: data.isNotEmpty,
+        page: state.page + 1,
+      );
 
-    notifyListeners();
+      notifyListeners();
+    } on DioException catch (error) {
+      state = state.copyWith(
+        isLoading: false,
+        error: error.dioExceptionMessage,
+      );
+      notifyListeners();
+    }
   }
 
   Future<void> pickAndInsertLocalImage() async {

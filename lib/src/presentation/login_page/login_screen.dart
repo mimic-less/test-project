@@ -52,24 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
       create: (context) => LoginNotifier(getIt<AuthService>()),
       child: Scaffold(
         backgroundColor: Colors.white,
-        bottomNavigationBar: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: Consumer<LoginNotifier>(
-                builder: (context, LoginNotifier notifier, child) {
-                  final state = notifier.state;
-                  return ElevatedButton(
-                    onPressed: () => login(context),
-                    child: buttonContent(state.isLoading),
-                  );
-                },
-              ),
-            ),
-          ),
-        ),
+        resizeToAvoidBottomInset: false,
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
           child: Form(
@@ -83,6 +66,20 @@ class _LoginScreenState extends State<LoginScreen> {
                 CustomTextFormField.email(_emailController),
                 const SizedBox(height: 10),
                 CustomTextFormField.password(_passwordController),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: Consumer<LoginNotifier>(
+                    builder: (context, notifier, child) {
+                      final state = notifier.state;
+                      return ElevatedButton(
+                        onPressed: () => login(context),
+                        child: buttonContent(state.isLoading),
+                      );
+                    },
+                  ),
+                ),
               ],
             ),
           ),

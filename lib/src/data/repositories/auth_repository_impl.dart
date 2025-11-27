@@ -1,10 +1,11 @@
-import '../api/api_client.dart';
+import 'package:dio/dio.dart';
+
 import '../../domain/repositories/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
-  const AuthRepositoryImpl(this._apiClient);
+  const AuthRepositoryImpl(this._dio);
 
-  final ApiClient _apiClient;
+  final Dio _dio;
 
   @override
   Future<String> login({
