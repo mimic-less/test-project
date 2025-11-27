@@ -1,16 +1,12 @@
 # plantin_test_project
 
-Mini gallery app
+### Mini gallery app
 
-## Getting Started
+A small demo application created on Flutter. It allows you to log in, view a grid of images, load subsequent pages, cache images, and open them in full size.
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### 🔧 Tools
+- Provider
+- get_it
+- go_router
+- dio
+- cached_network_image

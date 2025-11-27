@@ -52,7 +52,6 @@ class _LoginScreenState extends State<LoginScreen> {
       create: (context) => LoginNotifier(getIt<AuthService>()),
       child: Scaffold(
         backgroundColor: Colors.white,
-        resizeToAvoidBottomInset: false,
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
           child: Form(

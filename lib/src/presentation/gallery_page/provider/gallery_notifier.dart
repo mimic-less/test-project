@@ -14,8 +14,9 @@ class GalleryNotifier extends ChangeNotifier {
   final GalleryRepository _galleryRepository;
   GalleryState state = GalleryState.initial();
 
-  Future<void> loadNext() async {
+  Future<void> loadNext({bool retry = false}) async {
     if (state.isLoading || !state.hasMore) return;
+    if (state.error.isNotEmpty && !retry) return;
 
     state = state.copyWith(isLoading: true, error: '');
     notifyListeners();

@@ -69,7 +69,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
         content: Text(error),
         actions: [
           TextButton(
-            onPressed: () => context.read<GalleryNotifier>().loadNext(),
+            onPressed: () => context.read<GalleryNotifier>().loadNext(retry: true),
             child: const Text('Retry'),
           ),
         ],
