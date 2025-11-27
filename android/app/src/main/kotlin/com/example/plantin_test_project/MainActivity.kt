@@ -1,0 +1,5 @@
+package com.example.plantin_test_project
+
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity : FlutterActivity()
